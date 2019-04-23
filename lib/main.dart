@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:menstruation_helper/tabs/first.dart';
 import 'package:menstruation_helper/tabs/second.dart';
-import 'package:menstruation_helper/tabs/third.dart';
+import 'package:menstruation_helper/tabs/settings.dart';
 
 void main() {
-  runApp(new MaterialApp(
-      title: "MenstruationHelper",
-      home: new MyHome()));
+  runApp(new MaterialApp(title: "MenstruationHelper", home: new MyHome()));
 }
 
 class MyHome extends StatefulWidget {
@@ -16,17 +14,19 @@ class MyHome extends StatefulWidget {
 
 // SingleTickerProviderStateMixin is used for animation
 class MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin {
-  TabController controller;
+  int _selectedIndex = 0;
+  final _widgets = [
+    new FirstTab(),
+    new SecondTab(),
+  ];
 
   @override
   void initState() {
     super.initState();
-    controller = new TabController(length: 3, vsync: this);
   }
 
   @override
   void dispose() {
-    controller.dispose();
     super.dispose();
   }
 
@@ -35,29 +35,31 @@ class MyHomeState extends State<MyHome> with SingleTickerProviderStateMixin {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text("MenstruationHelper"),
-        backgroundColor: Colors.blue,
+        backgroundColor: Colors.pink[300],
       ),
-      body: new TabBarView(
-        children: <Widget>[new FirstTab(), new SecondTab(), new ThirdTab()],
-        controller: controller,
+      body: _widgets.elementAt(_selectedIndex),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            title: Text('Home'),
+            backgroundColor: Colors.pink[300]),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.question_answer),
+            title: Text('Analyze'),
+            backgroundColor: Colors.purpleAccent,
+          )
+        ],
+        currentIndex: _selectedIndex,
+        type: BottomNavigationBarType.shifting,
+        iconSize: 25.0,
+        onTap: (int index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
       ),
-      bottomNavigationBar: new Material(
-        color: Colors.blue,
-        child: new TabBar(
-          tabs: <Tab>[
-            new Tab(
-              icon: new Icon(Icons.favorite),
-            ),
-            new Tab(
-              icon: new Icon(Icons.adb),
-            ),
-            new Tab(
-              icon: new Icon(Icons.airport_shuttle),
-            ),
-          ],
-          controller: controller,
-        ),
-      ),
+      drawer: new Settings(),
     );
   }
 }
